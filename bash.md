@@ -1,5 +1,5 @@
 # Commandes
-## Sheebang
+## Shebang
 Le sheebang permet de définir quel sera l'interpréteur qui sera utilisé pour exécuter le script si on execute le fichier.
 
 Il doit être définit à la première ligne du script.
@@ -43,7 +43,6 @@ $#
 Nombre d'arguments à l'appel du script
 
 ## Variables
-
 ### Déclaration
 
 ~~~bash
@@ -53,7 +52,7 @@ On peut créer une variable à n'importe quel endroit dans le script.
 > Note : Il faut absolument ne pas laisser d'espaces entre le nom de la variable et sa valeur d'affectation
 
 ### Utilisation
-Pour exploiter la valeur d'une variable, il faut utiliser l'opérateur **$**.
+Pour exploiter la valeur d'une variable, il faut utiliser l'opérateur `$`.
 
 Exemple :
 ~~~bash
@@ -64,6 +63,49 @@ echo "Contenu de la variable : $mavariable"
 Ce qui affichera :
 ~~~bash
 Contenu de la variable : 3
+~~~
+
+### Portées
+#### Portée par défaut
+Toutes les variables déclarées sont de portée globale, c'est à dire qu'elle sont accessibles depuis n'importe où dans le script.
+
+Exemple :
+~~~bash
+var=3
+
+function test()
+{
+	echo $var
+}
+
+test
+~~~
+Le script ci-dessus affichera `3` dans la console.
+
+#### Portée *local*
+En plaçant le mot clef `local` avant la déclaration d'une variable, cette dernière sera disponible que dans la fonction dans laquelle elle sera déclarée.
+
+~~~bash
+function test()
+{
+	local var=3 # Création de la variable "var"
+	
+	if [[ test ]]
+	then
+		echo $var
+	fi	
+} # Ici la variable "var" sera détruite en mémoire
+~~~
+
+Si on ne met pas le mot clef `local` lors de la déclaration de la variable, celle-ci sera toujours disponible après l'exécution de la fonction.
+~~~bash
+function test()
+{
+	var=3 # Création de la variable "var"
+	...
+}
+
+echo $var # La variable "var" existe toujours ici
 ~~~
 
 ## Quotes
@@ -102,22 +144,51 @@ Exemple :
 echo "Le fichier fait `cat monfichier | wc -l` lignes"
 ~~~
 
-On peut également utiliser l'opérateur **$(commande)** :
+On peut également utiliser l'opérateur `$(commande)` :
 ~~~bash
 echo "Le fichier fait $(cat monfichier | wc -l) lignes"
 ~~~
 
+## Fonctions
+
+### Création
+~~~bash
+function ma_fonction()
+{
+	...
+}
+~~~
+> Attention : La déclaration d'une fonction peut varier en fonction de l'interpréteur utilisé (sh, bash, ksh, zsh, etc...)
+
+### Appeler une fonction
+Pour appeler une fonction, il suffit d'écrire le nom de la fonction, sans parenthèses, suivi des arguments d'appel.
+~~~bash
+ma_fonction "param1" "param2"
+~~~
+
+### Fonctions retourant une valeur
+
+#### Retourner une valeur
+Pour créer une fonction qui va retourner une valeur (nombre entier, texte, etc...) il faut utiliser l'instruction `echo` :
+~~~bash
+function ma_fonction()
+{
+	local result='KO'
+	
+	if [[ $1 = 'test' ]]
+	then
+		result='Ok'
+	fi
+	
+	echo $result
+}
+~~~
+
+Pour récupérer la sortie standard de la fonction, il suffit d'employer l'opérateur `$(...)` :
+~~~bash
+resultatTraitement=$(ma_fonction $arg1 "arg2")
+~~~
+
 ## Sources
-[https://www.shellscript.sh/index.html](https://www.shellscript.sh/index.html) 
-
-## TODO 
-- Fonctions
-	- Créer une fonction
-	- Appeler une fonction
-	- Fonctions retournant une valeur
-		- _return_
-		- Récupération de la valeur
-- Portées
-	- global
-	- local
-
+[https://fr.wikibooks.org/wiki/Programmation_Bash/Introduction](https://fr.wikibooks.org/wiki/Programmation_Bash/Introduction) (La bible)
+[https://www.shellscript.sh/index.html](https://www.shellscript.sh/index.html)
